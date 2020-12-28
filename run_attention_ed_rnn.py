@@ -1,3 +1,4 @@
+# %%
 import os
 import sys
 import argparse
@@ -21,16 +22,18 @@ from alg.train_attention_ed_rnn import AttentionEDTrain
 sys.argv = ['']
 parser = argparse.ArgumentParser()
 parser.add_argument('--gps-data', default="data/GPSmax7_new_6.npy", type=str)
-parser.add_argument('--label_data', default="data/Label_smax7_new_6.npy", type=str)
+parser.add_argument(
+    '--label_data', default="data/Label_smax7_new_6.npy", type=str)
 parser.add_argument('--train-ratio', default=0.7, type=float)
-parser.add_argument('--batch-size', default=64, type=int)
+parser.add_argument('--batch-size', default=500, type=int)
 parser.add_argument('--iteration', default=1000, type=int)
 parser.add_argument('--learning-rate', default=0.007, type=float)
 parser.add_argument("--clip", default=1.0, type=float)
-parser.add_argument('--cuda', default=False, action="store_true")
+parser.add_argument('--cuda', default=True, action="store_true")
 args = parser.parse_args()
 
-device = torch.device('cuda' if (torch.cuda.is_available() & args.cuda) else 'cpu')
+device = torch.device('cuda' if (
+    torch.cuda.is_available() & args.cuda) else 'cpu')
 
 boundaries = [127.015, 127.095, 37.47, 37.55]
 dm = DataManager(input_path=args.gps_data,
@@ -54,11 +57,12 @@ params = {"Encoder_in_feature": 2,
           "clip": args.clip}
 
 trainer = AttentionEDTrain(params, device, data_manager=dm)
-
+# %%
 
 for i in range(args.iteration):
     start_time = time.time()
     train_acc, train_loss = trainer.train()
+    #test_acc, test_loss = trainer.test()
     trainer.model_summary_writer.add_scalar('loss/train', train_loss, i)
     trainer.model_summary_writer.add_scalar('acc/train', train_acc*100, i)
     end_time = time.time()
@@ -67,15 +71,15 @@ for i in range(args.iteration):
     print("TRAIN :: iteration : {} loss : {:.5f} accuracy : {:.4f}% Time: {:1f}m, {:2f}s ".format(
         i+1, train_loss, train_acc*100, epoch_mins, epoch_secs))
 
-    start_time = time.time()
-    test_acc, test_loss = trainer.test()
-    trainer.model_summary_writer.add_scalar('loss/test', test_loss, i)
-    trainer.model_summary_writer.add_scalar('acc/test', test_acc*100, i)
-    end_time = time.time()
-    epoch_mins, epoch_secs = epoch_time(start_time, end_time)
+    # start_time = time.time()
+    # test_acc, test_loss = trainer.test()
+    # trainer.model_summary_writer.add_scalar('loss/test', test_loss, i)
+    # trainer.model_summary_writer.add_scalar('acc/test', test_acc*100, i)
+    # end_time = time.time()
+    # epoch_mins, epoch_secs = epoch_time(start_time, end_time)
 
-    print("TEST :: iteration : {} loss : {:.5f} accuracy : {:.4f}% Time: {:1f}m, {:2f}s ".format(
-        i+1, test_loss, test_acc*100, epoch_mins, epoch_secs))
+    # print("TEST :: iteration : {} loss : {:.5f} accuracy : {:.4f}% Time: {:1f}m, {:2f}s ".format(
+    #     i+1, test_loss, test_acc*100, epoch_mins, epoch_secs))
     # test_outs = trainer.test()
 
     # test_outs = trainer.test()
@@ -83,3 +87,5 @@ for i in range(args.iteration):
 
 # for input, label, length in dm.train_loader:
 #     break
+
+# %%
