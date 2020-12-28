@@ -85,3 +85,7 @@ class AttentionEDTrain(object):
 
     def get_accuracy(self, output, target):
         return 0
+
+    def get_attention_plot(self):
+        # summary.add_figure
+        return 0
