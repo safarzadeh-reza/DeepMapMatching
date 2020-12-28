@@ -24,8 +24,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--gps-data', default="data/GPSmax7_new_6.npy", type=str)
 parser.add_argument(
     '--label_data', default="data/Label_smax7_new_6.npy", type=str)
-parser.add_argument('--train-ratio', default=0.7, type=float)
-parser.add_argument('--batch-size', default=250, type=int)
+parser.add_argument('--train-ratio', default=0.5, type=float)
+parser.add_argument('--batch-size', default=100, type=int)
 parser.add_argument('--iteration', default=1000, type=int)
 parser.add_argument('--learning-rate', default=0.007, type=float)
 parser.add_argument("--clip", default=1.0, type=float)
@@ -53,6 +53,7 @@ params = {"Encoder_in_feature": 2,
           "Decoder_num_layers": 1,
           "Decoder_dropout": 0,
           "Model_input_pad_index": -1,
+          "Model_target_pad_index": 0,
           "learning_rate": args.learning_rate,
           "clip": args.clip}
 
@@ -74,4 +75,8 @@ for epoch in range(args.iteration):
 
     print(f'Epoch: {epoch+1:02} | Time: {epoch_mins}m {epoch_secs}s')
     print(f'\tTrain Loss: {train_loss:.3f} | Train ACC: {train_acc*100:.4f}')
-    print(f'\t Test. Loss: {test_loss:.3f} |  Test. ACC: {test_acc*100:.4f}')
+    print(f'\t Test Loss: {test_loss:.3f} |  Test ACC: {test_acc*100:.4f}')
+
+# %%
+
+# %%

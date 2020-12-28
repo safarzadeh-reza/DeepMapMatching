@@ -110,7 +110,7 @@ def make_input_mask(input, input_pad, device):
     return input_mask.to(device)
 
 
-def make_trg_mask(trg, device):
+def make_target_mask(trg, device):
     N, trg_len = trg.shape
     trg_mask = torch.tril(torch.ones((trg_len, trg_len))).expand(
         N, 1, trg_len, trg_len

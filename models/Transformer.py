@@ -210,13 +210,13 @@ class Transformer(nn.Module):
         trg_vocab_size,
         src_pad_idx,
         trg_pad_idx,
-        embed_size=512,
-        num_layers=6,
-        forward_expansion=4,
-        heads=8,
-        dropout=0,
-        device="cuda",
-        max_length=200,
+        embed_size,
+        num_layers,
+        forward_expansion,
+        heads,
+        dropout,
+        device,
+        max_length,
     ):
 
         super(Transformer, self).__init__()

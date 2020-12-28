@@ -5,51 +5,50 @@ from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
 
 class EncoderRNN(nn.Module):
-    def __init__(self, in_feature, hidden_size_1, hidden_size_2, num_layer):
+    def __init__(self, in_feature, embedding_size, hidden_size, num_layer, dropuout):
         super(EncoderRNN, self).__init__()
         self.in_feature = in_feature
-        self.hidden_size_1 = hidden_size_1
-        self.hidden_size_2 = hidden_size_2
-        self.embed_fc = torch.nn.Linear(in_feature, hidden_size_1)
+        self.embed_fc = torch.nn.Linear(in_feature, embedding_size)
         self.rnn = torch.nn.LSTM(
-            hidden_size_1, hidden_size_2, num_layer)
+            embedding_size, hidden_size, num_layer)
+        self.dropout = nn.Dropout(dropuout)
         self.emb_activation = nn.ReLU()
 
     def forward(self, input, input_len):
 
-        x = self.embed_fc(input)
-        x = self.emb_activation(x)
-        x = pack_padded_sequence(x, input_len)
+        embeded = self.dropout(self.embed_fc(input))
+        embeded = self.emb_activation(embeded)
+        packed_embeded = pack_padded_sequence(embeded, input_len)
 
-        _, (hidden, cell) = self.rnn(x)
-        #x,_ = pad_packed_sequence(packed_x,batch_first=True)
+        _, (hidden, cell) = self.rnn(packed_embeded)
         return hidden, cell
 
 # %%
 
 
 class DecoderRNN(nn.Module):
-    def __init__(self, emb_size, hidden_size, output_size, num_layer):
+    def __init__(self, embedding_size, hidden_size,
+                 output_size, num_layer, dropout):
         super(DecoderRNN, self).__init__()
         self.hidden_size = hidden_size
-        #self.in_feature = in_feature
-        # self.embed_fc = torch.nn.Linear(in_feature, emb_size)
-        self.embedding = nn.Embedding(output_size, emb_size, padding_idx=0)
-        self.rnn = nn.LSTM(emb_size, hidden_size, num_layer)
+        self.embedding = nn.Embedding(
+            output_size, embedding_size, padding_idx=0)
+        self.rnn = nn.LSTM(embedding_size, hidden_size, num_layer)
         self.fc1 = nn.Linear(hidden_size, hidden_size)
         self.fc2 = nn.Linear(hidden_size, hidden_size)
         self.fc3 = nn.Linear(hidden_size, output_size)
         self.output_size = output_size
         self.softmax = nn.Softmax(dim=1)
         self.activation = nn.Sigmoid()
+        self.dropout = nn.Dropout(dropout)
 
-    def forward(self, x, hidden, cell):
-        x = x.unsqueeze(0)
-        x = self.embedding(x)
+    def forward(self, input, hidden, cell):
+        input = input.unsqueeze(0)
+        input = self.dropout(self.embedding(input))
         # x = x.unsqueeze(0).T.unsqueeze(0).type(torch.Tensor).cuda(0)
         # x = self.embed_fc(x)
 
-        output, (hidden, cell) = self.rnn(x, (hidden, cell))
+        output, (hidden, cell) = self.rnn(input, (hidden, cell))
         output = output.squeeze(0)
         #output = self.activation(self.fc1(output))
         output = self.activation(self.fc2(output))

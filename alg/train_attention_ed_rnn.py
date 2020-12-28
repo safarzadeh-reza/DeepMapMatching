@@ -91,38 +91,41 @@ class AttentionEDTrain(object):
         acc_result = []
         loss_result = []
 
-        for input, label, length in self.data_manager.test_loader:
-            length, idx = torch.sort(length, descending=True)
-            input = input[idx]
-            label = label[idx]
+        with torch.no_grad():
+            for input, label, length in self.data_manager.test_loader:
+                length, idx = torch.sort(length, descending=True)
+                input = input[idx]
+                label = label[idx]
 
-            length = length.to(self.device)
-            input = input.to(self.device)
-            label = label.to(self.device)
+                length = length.to(self.device)
+                input = input.to(self.device)
+                label = label.to(self.device)
 
-            input = input.permute(1, 0, 2)
-            label = label.permute(1, 0)
+                input = input.permute(1, 0, 2)
+                label = label.permute(1, 0)
 
-            output = self.model(input, length, label)[0]
+                output = self.model(input, length, label)[0]
 
-            output_dim = output.shape[-1]
-            output_1 = output[1:].reshape(-1, output_dim)
-            trg = label[1:].reshape(-1)
-            loss = self.criterion(output_1, trg)
-            acc = self.get_accuracy(output, label)
+                output_dim = output.shape[-1]
+                output_1 = output[1:].reshape(-1, output_dim)
+                trg = label[1:].reshape(-1)
+                loss = self.criterion(output_1, trg)
+                acc = self.get_accuracy(output, label)
 
-            acc_result.append(acc)
-            loss_result.append(loss.item())
+                acc_result.append(acc)
+                loss_result.append(loss.item())
 
-        ACC = sum(acc_result)/len(acc_result)
-        LOSS = sum(loss_result)/len(loss_result)
+            ACC = sum(acc_result)/len(acc_result)
+            LOSS = sum(loss_result)/len(loss_result)
         return ACC, LOSS
 
     def get_accuracy(self, output, label):
 
-        mask = label[1:] != 0
-        padding_count = (mask == 0).sum().item()
-        output_1 = output[1:].argmax(2).masked_fill(mask == 0, 0)
+        mask = label[1:] != self.params['Model_target_pad_index']
+        padding_count = (
+            mask == self.params['Model_target_pad_index']).sum().item()
+        output_1 = output[1:].argmax(2).masked_fill(
+            mask == self.params['Model_target_pad_index'], 0)
 
         correct = (output_1 == label[1:]).sum()-padding_count
         total = output_1.size(0)*output_1.size(1)-padding_count
