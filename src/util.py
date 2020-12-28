@@ -1,3 +1,4 @@
+from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import glob
 import torch
@@ -88,12 +89,12 @@ def epoch_time(start_time, end_time):
     return elapsed_mins, elapsed_secs
 
 
-def normalization(raw_input):
-    x_min = 127.015
-    x_max = 127.095
+def normalization(raw_input, x_min, x_max, y_min, y_max):
+    # x_min = 127.015
+    # x_max = 127.095
 
-    y_min = 37.47
-    y_max = 37.55
+    # y_min = 37.47
+    # y_max = 37.55
 
     def apply_normalize_x(x): return (x-x_min)/(x_max-x_min) if x != -1 else -1
     def apply_normalize_y(y): return (y-y_min)/(y_max-y_min) if y != -1 else -1
@@ -116,3 +117,18 @@ def make_trg_mask(trg, device):
     )
 
     return trg_mask.to(device)
+
+
+class sequence_data(Dataset):
+    def __init__(self, gps, link, len):
+        self.gps = gps
+        self.link = link
+        self.len = len
+
+        self.data_size = gps.size(0)
+
+    def __getitem__(self, index):
+        return self.gps[index], self.link[index], self.len[index]
+
+    def __len__(self):
+        return self.data_size
