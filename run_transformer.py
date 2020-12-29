@@ -1,11 +1,8 @@
-# %%
-import os
+
 import sys
 import argparse
 import time
 
-import pandas as pd
-import numpy as np
 from numpy.lib.function_base import average
 
 import tensorboardX
@@ -24,7 +21,7 @@ parser.add_argument('--gps-data', default="data/GPSmax7_new_6.npy", type=str)
 parser.add_argument(
     '--label_data', default="data/Label_smax7_new_6.npy", type=str)
 parser.add_argument('--train-ratio', default=0.7, type=float)
-parser.add_argument('--batch-size', default=50, type=int)
+parser.add_argument('--batch-size', default=1000, type=int)
 parser.add_argument('--iteration', default=1000, type=int)
 parser.add_argument('--learning-rate', default=0.00012, type=float)
 parser.add_argument('--cuda', default=True, action="store_true")

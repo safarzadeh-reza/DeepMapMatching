@@ -13,7 +13,6 @@ class EncoderRNN(nn.Module):
         self.embedding_size = embedding_size
         self.hidden_size = hidden_size
         self.embed_fc = torch.nn.Linear(in_feature, embedding_size)
-        self.embedding = torch.nn.Embedding(in_feature, embedding_size)
         self.rnn = torch.nn.LSTM(
             embedding_size, hidden_size, num_layer, bidirectional=True)
         self.dropout = nn.Dropout(dropout)
@@ -59,7 +58,7 @@ class DecoderRNN(nn.Module):
         self.num_layers = num_layers
 
         self.embedding = nn.Embedding(
-            output_size, embedding_size)
+            output_size, embedding_size, padding_idx=0)
 
         self.rnn = nn.LSTM(hidden_size*2+embedding_size,
                            hidden_size, num_layers)

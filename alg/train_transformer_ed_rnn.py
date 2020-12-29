@@ -1,3 +1,4 @@
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -106,7 +107,7 @@ class TransformerEDTrain(object):
 
         with torch.no_grad():
 
-            for input, label, _ in self.data_manager.train_loader:
+            for input, label, _ in self.data_manager.test_loader:
 
                 label_1 = label[:, 1:].reshape(-1).to(self.device)
                 label_2 = label[:, :-1]
@@ -147,3 +148,5 @@ class TransformerEDTrain(object):
         acc = correct.item()/total
 
         return acc
+
+# %%

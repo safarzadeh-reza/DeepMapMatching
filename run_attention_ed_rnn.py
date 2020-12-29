@@ -1,11 +1,9 @@
-# %%
-import os
+
 import sys
 import argparse
 import time
 
-import pandas as pd
-import numpy as np
+
 from numpy.lib.function_base import average
 
 import tensorboardX
@@ -13,7 +11,6 @@ import torch
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
 # from models.Transformer import *
-from models.models_attention import EncoderRNN, DecoderRNN, Seq2Seq
 from src.DataManager import DataManager
 from src.util import *
 from alg.train_attention_ed_rnn import AttentionEDTrain
@@ -24,8 +21,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--gps-data', default="data/GPSmax7_new_6.npy", type=str)
 parser.add_argument(
     '--label_data', default="data/Label_smax7_new_6.npy", type=str)
-parser.add_argument('--train-ratio', default=0.5, type=float)
-parser.add_argument('--batch-size', default=100, type=int)
+parser.add_argument('--train-ratio', default=0.7, type=float)
+parser.add_argument('--batch-size', default=1000, type=int)
 parser.add_argument('--iteration', default=1000, type=int)
 parser.add_argument('--learning-rate', default=0.007, type=float)
 parser.add_argument("--clip", default=1.0, type=float)
@@ -76,7 +73,3 @@ for epoch in range(args.iteration):
     print(f'Epoch: {epoch+1:02} | Time: {epoch_mins}m {epoch_secs}s')
     print(f'\tTrain Loss: {train_loss:.3f} | Train ACC: {train_acc*100:.4f}')
     print(f'\t Test Loss: {test_loss:.3f} |  Test ACC: {test_acc*100:.4f}')
-
-# %%
-
-# %%

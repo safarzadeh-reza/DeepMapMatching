@@ -10,7 +10,8 @@ class DataManager(object):
     def __init__(self, input_path, label_path, boundaries, train_ratio, batch_size):
         self.raw_input = np.load(input_path)
         self.boundaries = boundaries
-        self.raw_input = normalization(self.raw_input, boundaries[0], boundaries[1], boundaries[2], boundaries[3])
+        self.raw_input = normalization(
+            self.raw_input, boundaries[0], boundaries[1], boundaries[2], boundaries[3])
 
         self.raw_label = np.load(label_path)
         self.raw_label[self.raw_label < 0] = 0
