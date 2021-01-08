@@ -1,4 +1,5 @@
-
+import os
+from models.transformer_vanilla import *
 import sys
 import argparse
 import time
@@ -14,6 +15,7 @@ from src.DataManager import DataManager
 from src.util import *
 from alg.train_transformer_ed_rnn import TransformerEDTrain
 
+# os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 sys.argv = ['']
 parser = argparse.ArgumentParser()
@@ -21,14 +23,15 @@ parser.add_argument('--gps-data', default="data/GPSmax7_new_6.npy", type=str)
 parser.add_argument(
     '--label_data', default="data/Label_smax7_new_6.npy", type=str)
 parser.add_argument('--train-ratio', default=0.7, type=float)
-parser.add_argument('--batch-size', default=1000, type=int)
+parser.add_argument('--batch-size', default=128, type=int)
 parser.add_argument('--iteration', default=1000, type=int)
 parser.add_argument('--learning-rate', default=0.00012, type=float)
 parser.add_argument('--cuda', default=True, action="store_true")
 args = parser.parse_args()
 
-device = torch.device('cuda' if (
-    torch.cuda.is_available() & args.cuda) else 'cpu')
+# device = torch.device('cuda' if (
+#     torch.cuda.is_available() & args.cuda) else 'cpu')
+device = torch.device("cuda")
 
 boundaries = [127.015, 127.095, 37.47, 37.55]
 dm = DataManager(input_path=args.gps_data,
@@ -63,12 +66,11 @@ for epoch in range(args.iteration):
 
     if test_loss < best_test_loss:
         best_test_loss = test_loss
+        if not os.path.exists('pytorch_model/transformer'):
+            os.makedirs('pytorch_model/transformer')
         torch.save(trainer.model,
                    'pytorch_model/transformer/best_transformer.pt')
 
     print(f'Epoch: {epoch+1:02} | Time: {epoch_mins}m {epoch_secs}s')
     print(f'\tTrain Loss: {train_loss:.3f} | Train ACC: {train_acc*100:.4f}')
     print(f'\t Test Loss: {test_loss:.3f} |  Test  ACC: {test_acc*100:.4f}')
-
-
-# %%

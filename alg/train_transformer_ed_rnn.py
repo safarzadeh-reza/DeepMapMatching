@@ -20,24 +20,6 @@ class TransformerEDTrain(object):
         self.params = params
         self.device = device
 
-        self.encoder = Encoder(params["Encoder_in_feature"],
-                               params["Embedding_size"],
-                               params["Num_layers"],
-                               params["Heads"],
-                               params["Device"],
-                               params["Forward_expansion"],
-                               params["Dropout"],
-                               params["Max_length"]).to(self.device)
-
-        self.decoder = Decoder(params["Decoder_in_feature"],
-                               params["Embedding_size"],
-                               params["Num_layers"],
-                               params["Heads"],
-                               params["Forward_expansion"],
-                               params["Dropout"],
-                               params["Device"],
-                               params["Max_length"]).to(self.device)
-
         self.model = Transformer(params["Encoder_in_feature"],
                                  params["Decoder_in_feature"],
                                  params["Encoder_pad"],
@@ -59,8 +41,6 @@ class TransformerEDTrain(object):
         self.data_manager = data_manager
 
     def train(self):
-        self.encoder.train()
-        self.decoder.train()
         self.model.train()
 
         acc_result = []
@@ -98,8 +78,6 @@ class TransformerEDTrain(object):
         return ACC, LOSS
 
     def test(self):
-        self.encoder.eval()
-        self.decoder.eval()
         self.model.eval()
 
         acc_result = []

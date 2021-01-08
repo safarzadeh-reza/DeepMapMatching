@@ -145,3 +145,4 @@ log/
 *.csv
 *.pth
 *.npy
+*.pt

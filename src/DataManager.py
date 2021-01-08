@@ -27,23 +27,23 @@ class DataManager(object):
         train_idx = randidx[:n_train]
         test_idx = randidx[n_train:(n_train+n_test)]
 
-        train_input = torch.FloatTensor(self.raw_input[train_idx])
-        train_label = torch.LongTensor(self.raw_label[train_idx])
-        train_len = train_input[:, :, 0] != -1
-        train_len = train_len.sum(axis=1)
+        self.train_input = torch.FloatTensor(self.raw_input[train_idx])
+        self.train_label = torch.LongTensor(self.raw_label[train_idx])
+        self.train_len = self.train_input[:, :, 0] != -1
+        self.train_len = self.train_len.sum(axis=1)
 
-        test_input = torch.FloatTensor(self.raw_input[test_idx])
-        self.test_input = test_input
-        test_target = torch.LongTensor(self.raw_label[test_idx])
-        test_len = test_input[:, :, 0] != -1
-        test_len = test_len.sum(axis=1)
+        self.test_input = torch.FloatTensor(self.raw_input[test_idx])
+        # self.test_input = test_input
+        self.test_target = torch.LongTensor(self.raw_label[test_idx])
+        self.test_len = self.test_input[:, :, 0] != -1
+        self.test_len = self.test_len.sum(axis=1)
 
-        train_data = sequence_data(train_input, train_label, train_len)
-        test_data = sequence_data(test_input, test_target, test_len)
+        self.train_data = sequence_data(self.train_input, self.train_label, self.train_len)
+        self.test_data = sequence_data(self.test_input, self.test_target, self.test_len)
 
-        self.train_loader = DataLoader(dataset=train_data,
+        self.train_loader = DataLoader(dataset=self.train_data,
                                        batch_size=batch_size,
                                        shuffle=True)
-        self.test_loader = DataLoader(dataset=test_data,
+        self.test_loader = DataLoader(dataset=self.test_data,
                                       batch_size=batch_size,
                                       shuffle=True)
